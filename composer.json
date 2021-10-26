@@ -1,0 +1,20 @@
+{
+    "name": "mbolli/phpgeobuf",
+    "description": "PHP class for the geobuf compact geospatial format",
+    "type": "library",
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "Michael Bolli",
+            "email": "michael@bolli.us"
+        }
+    ],
+    "require": {
+        "google/protobuf": "^3.19"
+    },
+    "autoload": {
+        "psr-4": {
+            "MBolli\\PhpGeobuf\\": "src/"
+        }
+    }
+}
