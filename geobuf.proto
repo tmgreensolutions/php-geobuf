@@ -1,11 +1,12 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
+package MBolli.PhpGeobuf;
 
 message Data {
     repeated string keys = 1; // global arrays of unique keys
 
-    optional uint32 dimensions = 2; //[default = 2]; // max coordinate dimensions
-    optional uint32 precision = 3; //[default = 6]; // number of digits after decimal point for coordinates
+    uint32 dimensions = 2; //[default = 2]; // max coordinate dimensions
+    uint32 precision = 3; //[default = 6]; // number of digits after decimal point for coordinates
 
     oneof data_type {
         FeatureCollection feature_collection = 4;
