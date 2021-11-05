@@ -82,6 +82,19 @@ class Data extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * add to the global arrays of unique keys
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addKey($var)
+    {
+        $this->keys[] = $var;
+
+        return $this;
+    }
+
+    /**
      *[default = 2]; // max coordinate dimensions
      *
      * Generated from protobuf field <code>optional uint32 dimensions = 2;</code>

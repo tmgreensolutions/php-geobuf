@@ -7,11 +7,12 @@ namespace MBolli\PhpGeobuf\Data;
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
+use MBolli\PhpGeobuf\Interfaces\IHasCustomProperties;
 
 /**
  * Generated from protobuf message <code>MBolli.PhpGeobuf.Data.FeatureCollection</code>
  */
-class FeatureCollection extends \Google\Protobuf\Internal\Message
+class FeatureCollection extends \Google\Protobuf\Internal\Message implements IHasCustomProperties
 {
     /**
      * Generated from protobuf field <code>repeated .MBolli.PhpGeobuf.Data.Feature features = 1;</code>
@@ -108,6 +109,17 @@ class FeatureCollection extends \Google\Protobuf\Internal\Message
         return $this;
     }
 
+    /**
+     * Add a custom property
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addCustomProperty($var) {
+        $this->custom_properties[] = $var;
+
+        return $this;
+    }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.

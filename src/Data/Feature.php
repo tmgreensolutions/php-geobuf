@@ -7,11 +7,13 @@ namespace MBolli\PhpGeobuf\Data;
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
+use MBolli\PhpGeobuf\Interfaces\IHasCustomProperties;
+use MBolli\PhpGeobuf\Interfaces\IHasProperties;
 
 /**
  * Generated from protobuf message <code>MBolli.PhpGeobuf.Data.Feature</code>
  */
-class Feature extends \Google\Protobuf\Internal\Message
+class Feature extends \Google\Protobuf\Internal\Message implements IHasProperties, IHasCustomProperties
 {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Geometry geometry = 1;</code>
@@ -198,6 +200,18 @@ class Feature extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Add property
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addProperty($var) {
+        $this->properties[] = $var;
+
+        return $this;
+    }
+
+    /**
      * arbitrary properties
      *
      * Generated from protobuf field <code>repeated uint32 custom_properties = 15 [packed = true];</code>
@@ -224,13 +238,24 @@ class Feature extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * add arbitrary property
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addCustomProperty($var) {
+        $this->custom_properties[] = $var;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getIdType()
     {
         return $this->whichOneof("id_type");
     }
-
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.

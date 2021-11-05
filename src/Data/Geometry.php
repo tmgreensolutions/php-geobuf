@@ -7,11 +7,12 @@ namespace MBolli\PhpGeobuf\Data;
 use Google\Protobuf\Internal\GPBType;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
+use MBolli\PhpGeobuf\Interfaces\IHasCustomProperties;
 
 /**
  * Generated from protobuf message <code>MBolli.PhpGeobuf.Data.Geometry</code>
  */
-class Geometry extends \Google\Protobuf\Internal\Message
+class Geometry extends \Google\Protobuf\Internal\Message implements IHasCustomProperties
 {
     /**
      * Generated from protobuf field <code>.MBolli.PhpGeobuf.Data.Geometry.Type type = 1;</code>
@@ -112,6 +113,19 @@ class Geometry extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * add length to coordinate structure
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addLength($var)
+    {
+        $this->lengths[] = $var;
+
+        return $this;
+    }
+
+    /**
      * delta-encoded integer values
      *
      * Generated from protobuf field <code>repeated sint64 coords = 3 [packed = true];</code>
@@ -203,6 +217,17 @@ class Geometry extends \Google\Protobuf\Internal\Message
         return $this;
     }
 
+    /**
+     * Add custom property
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addCustomProperty($var) {
+        $this->custom_properties[] = $var;
+
+        return $this;
+    }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
