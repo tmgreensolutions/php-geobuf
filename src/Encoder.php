@@ -9,10 +9,10 @@ use MBolli\PhpGeobuf\Data\Value;
 use MBolli\PhpGeobuf\Interfaces\IHasAnyProperties;
 use MBolli\PhpGeobuf\Interfaces\IHasCustomProperties;
 use MBolli\PhpGeobuf\Interfaces\IHasProperties;
+use JsonException;
 
 class Encoder {
-
-    private const geometry_types = [
+    private const GEOMETRY_TYPES = [
         'Point' => 0,
         'MultiPoint' => 1,
         'LineString' => 2,
@@ -37,7 +37,7 @@ class Encoder {
      * @param string $dataJson
      * @param int $precision
      * @param int $dim
-     * @return int|false
+     * @return false|int
      * @throws GeobufException
      */
     public static function encodeToFile(string $filePath, string $dataJson, int $precision = 6, int $dim = 2) {
@@ -45,129 +45,162 @@ class Encoder {
     }
 
     /**
+     * encodes a json string `$dataJson` to Geobuf and returns the resulting string.
      * @param string $data_json
      * @param int $precision
      * @param int $dim
      * @return string
      * @throws GeobufException
      */
-    public static function encode(string $data_json, int $precision = 6, int $dim = 2) {
+    public static function encode(string $data_json, int $precision = 6, int $dim = 2): string {
         try {
             $geoJson = json_decode($data_json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             throw new GeobufException('Error while decoding GeoJSON: ' . $e->getMessage(), 0, $e);
         }
 
         static::$json = $geoJson;
         static::$data = new Data();
         static::$dim = $dim;
-        static::$e = pow(10, $precision); # multiplier for converting coordinates into integers
+        static::$e = 10** $precision; # multiplier for converting coordinates into integers
 
         $data_type = static::$json['type'];
-        if ($data_type == 'FeatureCollection')
-            static::$data->setFeatureCollection(static::encode_feature_collection());
-        elseif ($data_type == 'Feature')
-            static::$data->setFeature(static::encode_feature(static::$json));
-        else
-            static::$data->setGeometry(static::encode_geometry(static::$json));
+        if ('FeatureCollection' == $data_type) {
+            static::$data->setFeatureCollection(static::encodeFeatureCollection());
+        } elseif ('Feature' == $data_type) {
+            static::$data->setFeature(static::encodeFeature(static::$json));
+        } else {
+            static::$data->setGeometry(static::encodeGeometry(static::$json));
+        }
 
         return static::$data->serializeToString();
     }
 
-    private static function encode_feature_collection(): FeatureCollection {
+    /**
+     * @return FeatureCollection
+     */
+    private static function encodeFeatureCollection(): FeatureCollection {
         $feature_collection = new FeatureCollection();
-        static::encode_custom_properties($feature_collection, static::$json, ['type', 'features']);
+        static::encodeCustomProperties($feature_collection, static::$json, ['type', 'features']);
         $features = [];
         foreach (static::$json['features'] as $feature_json) {
-            $features[] = static::encode_feature($feature_json);
+            $features[] = static::encodeFeature($feature_json);
         }
         $feature_collection->setFeatures($features);
         return $feature_collection;
     }
 
-    private static function encode_feature(array $feature_json): Feature {
+    /**
+     * @param array $feature_json
+     * @return Feature
+     */
+    private static function encodeFeature(array $feature_json): Feature {
         $feature = new Feature();
-        static::encode_id($feature, $feature_json['id'] ?? null);
-        static::encode_properties($feature, $feature_json['properties']);
-        static::encode_custom_properties($feature, $feature_json, ['type', 'id', 'properties', 'geometry']);
-        $feature->setGeometry(static::encode_geometry($feature_json['geometry']));
+        static::encodeId($feature, $feature_json['id'] ?? null);
+        static::encodeProperties($feature, $feature_json['properties']);
+        static::encodeCustomProperties($feature, $feature_json, ['type', 'id', 'properties', 'geometry']);
+        $feature->setGeometry(static::encodeGeometry($feature_json['geometry']));
         return $feature;
     }
 
-    private static function encode_geometry(array $geometry_json): Geometry {
+    /**
+     * @param array $geometry_json
+     * @return Geometry
+     */
+    private static function encodeGeometry(array $geometry_json): Geometry {
         $geometry = new Geometry();
         $gt = $geometry_json['type'];
         $coords = $geometry_json['coordinates'];
 
-        $geometry->setType(static::geometry_types[$gt]);
+        $geometry->setType(static::GEOMETRY_TYPES[$gt]);
 
-        static::encode_custom_properties($geometry, $geometry_json,
-            ['type', 'id', 'coordinates', 'arcs', 'geometries', 'properties']);
+        static::encodeCustomProperties(
+            $geometry,
+            $geometry_json,
+            ['type', 'id', 'coordinates', 'arcs', 'geometries', 'properties']
+        );
 
         switch ($gt) {
             case 'GeometryCollection':
                 $geometries = [];
-                foreach ($geometry_json['geometries'] as $geom)
-                    $geometries[] = static::encode_geometry($geom);
+                foreach ($geometry_json['geometries'] as $geom) {
+                    $geometries[] = static::encodeGeometry($geom);
+                }
                 $geometry->setGeometries($geometries);
                 break;
             case 'Point':
-                $geometry->setCoords(static::add_point($coords));
+                $geometry->setCoords(static::addPoint($coords));
                 break;
             case 'LineString':
             case 'MultiPoint':
-                $geometry->setCoords(static::add_line($coords));
+                $geometry->setCoords(static::addLine($coords));
                 break;
             case 'MultiLineString':
-                static::add_multi_line($geometry, $coords);
+                static::addMultiLine($geometry, $coords);
                 break;
             case 'Polygon':
-                static::add_multi_line($geometry, $coords, true);
+                static::addMultiLine($geometry, $coords, true);
                 break;
             case 'MultiPolygon':
-                static::add_multi_polygon($geometry, $coords);
+                static::addMultiPolygon($geometry, $coords);
                 break;
         }
 
         return $geometry;
     }
 
-    private static function encode_properties(IHasProperties $obj, array $props_json) {
+    /**
+     * @param IHasProperties $obj
+     * @param array $props_json
+     */
+    private static function encodeProperties(IHasProperties $obj, array $props_json): void {
         foreach ($props_json as $key => $val) {
-            $obj->addProperty(static::encode_property($key, $val, $obj));
+            $obj->addProperty(static::encodeProperty($key, $val, $obj));
         }
     }
 
-    private static function encode_custom_properties(IHasCustomProperties $obj, array $obj_json, array $exclude) {
+    /**
+     * @param IHasCustomProperties $obj
+     * @param array $obj_json
+     * @param array $exclude
+     */
+    private static function encodeCustomProperties(IHasCustomProperties $obj, array $obj_json, array $exclude): void {
         foreach ($obj_json as $key => $val) {
-            if (!in_array($key, $exclude))
-                $obj->addCustomProperty(static::encode_property($key, $val, $obj));
+            if (!in_array($key, $exclude)) {
+                $obj->addCustomProperty(static::encodeProperty($key, $val, $obj));
+            }
         }
     }
 
-    private static function encode_property(string $key, $val, IHasSomeProperties $obj): Value {
-
+    /**
+     * @param string $key
+     * @param $val
+     * @param IHasSomeProperties $obj
+     * @return Value
+     */
+    private static function encodeProperty(string $key, $val, IHasSomeProperties $obj): Value {
         $key_index = array_search($key, static::$keys, true);
 
-        if ($key_index === false) {
+        if (false === $key_index) {
             static::$keys[$key] = true;
             static::$data->addKey($key);
             $key_index = count(static::$data->getKeys()) - 1;
         }
         $value = new Value();
 
-        if (is_array($val))
+        if (is_array($val)) {
             $value->setJsonValue(json_encode($val));
-        elseif (is_string($val))
+        } elseif (is_string($val)) {
             $value->setStringValue($val);
-        elseif (is_float($val))
+        } elseif (is_float($val)) {
             $value->setDoubleValue($val);
-        elseif (is_int($val))
-            static::encode_int($value, $val);
-        elseif (is_bool($val))
+        } elseif (is_int($val)) {
+            static::encodeInt($value, $val);
+        } elseif (is_bool($val)) {
             $value->setBoolValue($val);
-        elseif (is_numeric($val))
-            static::encode_int($value, (int)$val);
+        } elseif (is_numeric($val)) {
+            static::encodeInt($value, (int)$val);
+        }
 
         if (method_exists($obj, 'addProperty')) {
             $obj->addProperty($key_index);
@@ -175,36 +208,64 @@ class Encoder {
         }
 
         return $value;
-}
+    }
 
-    private static function encode_int(Value $value, int $val) {
-        if ($val >= 0)
+    /**
+     * @param Value $value
+     * @param int $val
+     */
+    private static function encodeInt(Value $value, int $val): void {
+        if ($val >= 0) {
             $value->setPosIntValue($val);
-        else
+        } else {
             $value->setNegIntValue(-$val);
+        }
     }
 
-    private static function encode_id(Feature $feature, $id) {
-        if ($id === null) return;
-        if (is_int($id)) $feature->setIntId($id);
-        else $feature->setId($id);
+    /**
+     * @param Feature $feature
+     * @param $id
+     */
+    private static function encodeId(Feature $feature, $id): void {
+        if (null === $id) {
+            return;
+        }
+        if (is_int($id)) {
+            $feature->setIntId($id);
+        } else {
+            $feature->setId($id);
+        }
     }
 
-    private static function add_coord(array &$coords, $coord) {
+    /**
+     * @param array $coords
+     * @param $coord
+     */
+    private static function addCoord(array &$coords, $coord): void {
         $coords[] = (int)round($coord * static::$e);
     }
 
-    private static function add_point($point): array {
+    /**
+     * @param $point
+     * @return array
+     */
+    private static function addPoint($point): array {
         $coords = [];
-        foreach($point as $x)
-            static::add_coord($coords, $x);
+        foreach ($point as $x) {
+            static::addCoord($coords, $x);
+        }
         return $coords;
     }
 
-    private static function add_line(array $points, bool $is_closed = false): array {
+    /**
+     * @param array $points
+     * @param bool $isClosed
+     * @return array
+     */
+    private static function addLine(array $points, bool $isClosed = false): array {
         $coords = [];
         $sum = array_fill(0, static::$dim, 0);
-        for ($i = 0; $i < count($points) - (int)$is_closed; $i++) {
+        for ($i = 0; $i < count($points) - (int)$isClosed; $i++) {
             for ($j = 0; $j < static::$dim; $j++) {
                 $n = (int)round($points[$i][$j] * static::$e) - $sum[$j];
                 $coords[] = $n;
@@ -214,23 +275,31 @@ class Encoder {
         return $coords;
     }
 
-    private static function add_multi_line(Geometry $geometry, array $lines, bool $is_closed = false) {
-        if (count($lines) !== 1) {
+    /**
+     * @param Geometry $geometry
+     * @param array $lines
+     * @param bool $isClosed
+     */
+    private static function addMultiLine(Geometry $geometry, array $lines, bool $isClosed = false): void {
+        if (1 !== count($lines)) {
             foreach ($lines as $points) {
-                $geometry->addLength(count($points) - (int)$is_closed);
+                $geometry->addLength(count($points) - (int)$isClosed);
             }
         }
 
         $coords = [];
         foreach ($lines as $points) {
-            $coords = array_merge($coords, static::add_line($points, $is_closed));
+            $coords = array_merge($coords, static::addLine($points, $isClosed));
         }
         $geometry->setCoords($coords);
-
     }
 
-    private static function add_multi_polygon(Geometry $geometry, array $polygons) {
-        if (count($polygons) !== 1 || count($polygons[0]) !== 1) {
+    /**
+     * @param Geometry $geometry
+     * @param array $polygons
+     */
+    private static function addMultiPolygon(Geometry $geometry, array $polygons): void {
+        if (1 !== count($polygons) || 1 !== count($polygons[0])) {
             $geometry->addLength(count($polygons));
             foreach ($polygons as $rings) {
                 $geometry->addLength(count($rings));
@@ -244,7 +313,7 @@ class Encoder {
         $coords = [];
         foreach ($polygons as $rings) {
             foreach ($rings as $points) {
-                $coords = array_merge($coords, static::add_line($points, true));
+                $coords = array_merge($coords, static::addLine($points, true));
             }
         }
         $geometry->setCoords($coords);
