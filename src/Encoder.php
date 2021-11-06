@@ -46,15 +46,15 @@ class Encoder {
 
     /**
      * encodes a json string `$dataJson` to Geobuf and returns the resulting string.
-     * @param string $data_json
+     * @param string $dataJson
      * @param int $precision
      * @param int $dim
      * @return string
      * @throws GeobufException
      */
-    public static function encode(string $data_json, int $precision = 6, int $dim = 2): string {
+    public static function encode(string $dataJson, int $precision = 6, int $dim = 2): string {
         try {
-            $geoJson = json_decode($data_json, true, 512, JSON_THROW_ON_ERROR);
+            $geoJson = json_decode($dataJson, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new GeobufException('Error while decoding GeoJSON: ' . $e->getMessage(), 0, $e);
         }
@@ -64,10 +64,10 @@ class Encoder {
         static::$dim = $dim;
         static::$e = 10** $precision; # multiplier for converting coordinates into integers
 
-        $data_type = static::$json['type'];
-        if ('FeatureCollection' == $data_type) {
+        $dataType = static::$json['type'];
+        if ('FeatureCollection' == $dataType) {
             static::$data->setFeatureCollection(static::encodeFeatureCollection());
-        } elseif ('Feature' == $data_type) {
+        } elseif ('Feature' == $dataType) {
             static::$data->setFeature(static::encodeFeature(static::$json));
         } else {
             static::$data->setGeometry(static::encodeGeometry(static::$json));
@@ -80,50 +80,50 @@ class Encoder {
      * @return FeatureCollection
      */
     private static function encodeFeatureCollection(): FeatureCollection {
-        $feature_collection = new FeatureCollection();
-        static::encodeCustomProperties($feature_collection, static::$json, ['type', 'features']);
+        $featureCollection = new FeatureCollection();
+        static::encodeCustomProperties($featureCollection, static::$json, ['type', 'features']);
         $features = [];
-        foreach (static::$json['features'] as $feature_json) {
-            $features[] = static::encodeFeature($feature_json);
+        foreach (static::$json['features'] as $featureJson) {
+            $features[] = static::encodeFeature($featureJson);
         }
-        $feature_collection->setFeatures($features);
-        return $feature_collection;
+        $featureCollection->setFeatures($features);
+        return $featureCollection;
     }
 
     /**
-     * @param array $feature_json
+     * @param array $featureJson
      * @return Feature
      */
-    private static function encodeFeature(array $feature_json): Feature {
+    private static function encodeFeature(array $featureJson): Feature {
         $feature = new Feature();
-        static::encodeId($feature, $feature_json['id'] ?? null);
-        static::encodeProperties($feature, $feature_json['properties'] ?? []);
-        static::encodeCustomProperties($feature, $feature_json, ['type', 'id', 'properties', 'geometry']);
-        $feature->setGeometry(static::encodeGeometry($feature_json['geometry']));
+        static::encodeId($feature, $featureJson['id'] ?? null);
+        static::encodeProperties($feature, $featureJson['properties'] ?? []);
+        static::encodeCustomProperties($feature, $featureJson, ['type', 'id', 'properties', 'geometry']);
+        $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
         return $feature;
     }
 
     /**
-     * @param array $geometry_json
+     * @param array $geometryJson
      * @return Geometry
      */
-    private static function encodeGeometry(array $geometry_json): Geometry {
+    private static function encodeGeometry(array $geometryJson): Geometry {
         $geometry = new Geometry();
-        $gt = $geometry_json['type'];
-        $coords = $geometry_json['coordinates'];
+        $gt = $geometryJson['type'];
+        $coords = $geometryJson['coordinates'];
 
         $geometry->setType(static::GEOMETRY_TYPES[$gt]);
 
         static::encodeCustomProperties(
             $geometry,
-            $geometry_json,
+            $geometryJson,
             ['type', 'id', 'coordinates', 'arcs', 'geometries', 'properties']
         );
 
         switch ($gt) {
             case 'GeometryCollection':
                 $geometries = [];
-                foreach ($geometry_json['geometries'] as $geom) {
+                foreach ($geometryJson['geometries'] as $geom) {
                     $geometries[] = static::encodeGeometry($geom);
                 }
                 $geometry->setGeometries($geometries);
@@ -151,21 +151,21 @@ class Encoder {
 
     /**
      * @param IHasProperties $obj
-     * @param array $props_json
+     * @param array $propsJson
      */
-    private static function encodeProperties(IHasProperties $obj, array $props_json): void {
-        foreach ($props_json as $key => $val) {
+    private static function encodeProperties(IHasProperties $obj, array $propsJson): void {
+        foreach ($propsJson as $key => $val) {
             $obj->addProperty(static::encodeProperty($key, $val, $obj));
         }
     }
 
     /**
      * @param IHasCustomProperties $obj
-     * @param array $obj_json
+     * @param array $objJson
      * @param array $exclude
      */
-    private static function encodeCustomProperties(IHasCustomProperties $obj, array $obj_json, array $exclude): void {
-        foreach ($obj_json as $key => $val) {
+    private static function encodeCustomProperties(IHasCustomProperties $obj, array $objJson, array $exclude): void {
+        foreach ($objJson as $key => $val) {
             if (!in_array($key, $exclude)) {
                 $obj->addCustomProperty(static::encodeProperty($key, $val, $obj));
             }
@@ -179,12 +179,12 @@ class Encoder {
      * @return Value
      */
     private static function encodeProperty(string $key, $val, IHasSomeProperties $obj): Value {
-        $key_index = array_search($key, static::$keys, true);
+        $keyIndex = array_search($key, static::$keys, true);
 
-        if (false === $key_index) {
+        if (false === $keyIndex) {
             static::$keys[$key] = true;
             static::$data->addKey($key);
-            $key_index = count(static::$data->getKeys()) - 1;
+            $keyIndex = count(static::$data->getKeys()) - 1;
         }
         $value = new Value();
 
@@ -203,7 +203,7 @@ class Encoder {
         }
 
         if (method_exists($obj, 'addProperty')) {
-            $obj->addProperty($key_index);
+            $obj->addProperty($keyIndex);
             $obj->addProperty(count($obj->getValues())-1);
         }
 

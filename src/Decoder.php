@@ -90,15 +90,15 @@ class Decoder {
     }
 
     /**
-     * @param FeatureCollection $feature_collection
+     * @param FeatureCollection $featureCollection
      * @return array
      */
-    private static function decodeFeatureCollection(FeatureCollection $feature_collection): array {
+    private static function decodeFeatureCollection(FeatureCollection $featureCollection): array {
         $obj = ['type' => 'FeatureCollection', 'features' => []];
 
-        static::decodeProperties($feature_collection->getCustomProperties(), $feature_collection->getValues(), $obj);
+        static::decodeProperties($featureCollection->getCustomProperties(), $featureCollection->getValues(), $obj);
 
-        foreach ($feature_collection->getFeatures() as $feature) {
+        foreach ($featureCollection->getFeatures() as $feature) {
             $obj['features'][] = static::decodeFeature($feature);
         }
 
@@ -137,19 +137,19 @@ class Decoder {
         foreach ($props as $i => $prop) {
             $val = $values[$props[$i+1]];
             $key = $keys[$prop];
-            $value_type = $val->getValueType();
+            $valueType = $val->getValueType();
 
-            if ('string_value' == $value_type) {
+            if ('string_value' == $valueType) {
                 $dest[$key] = $val->getStringValue();
-            } elseif ('double_value' == $value_type) {
+            } elseif ('double_value' == $valueType) {
                 $dest[$key] = $val->getDoubleValue();
-            } elseif ('pos_int_value' == $value_type) {
+            } elseif ('pos_int_value' == $valueType) {
                 $dest[$key] = $val->getPosIntValue();
-            } elseif ('neg_int_value' == $value_type) {
+            } elseif ('neg_int_value' == $valueType) {
                 $dest[$key] = -$val->getNegIntValue();
-            } elseif ('bool_value' == $value_type) {
+            } elseif ('bool_value' == $valueType) {
                 $dest[$key] = $val->getBoolValue();
-            } elseif ('json_value' == $value_type) {
+            } elseif ('json_value' == $valueType) {
                 $dest[$key] = json_decode($val->getJsonValue());
             }
         }
@@ -287,14 +287,14 @@ class Decoder {
         $obj = [];
         $i = 0;
         $j = 1;
-        $num_polygons = $lengths[0];
+        $numPolygons = $lengths[0];
 
-        foreach (range(0, $num_polygons) as $n) {
-            $num_rings = $lengths[$j];
+        foreach (range(0, $numPolygons) as $n) {
+            $numRings = $lengths[$j];
             $j++;
             $rings = [];
 
-            foreach (array_slice($coords, $j, $j + $num_rings) as $l) {
+            foreach (array_slice($coords, $j, $j + $numRings) as $l) {
                 $rings[] = static::decodeLine(array_slice($coords, $i, $i + $l * static::$dim), true);
                 $j++;
                 $i += $l * static::$dim;
