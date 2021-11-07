@@ -1,6 +1,6 @@
 {
     "name": "mbolli/php-geobuf",
-    "description": "PHP class for the geobuf compact geospatial format",
+    "description": "PHP library for the geobuf compact geospatial format",
     "type": "library",
     "license": "ISC",
     "authors": [
