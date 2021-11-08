@@ -127,7 +127,7 @@ class Geometry extends Message implements IHasCustomProperties {
      * delta-encoded integer values
      *
      * Generated from protobuf field <code>repeated sint64 coords = 3 [packed = true];</code>
-     * @return RepeatedField
+     * @return array|RepeatedField
      */
     public function getCoords() {
         return $this->coords;
@@ -149,7 +149,7 @@ class Geometry extends Message implements IHasCustomProperties {
 
     /**
      * Generated from protobuf field <code>repeated .MBolli.PhpGeobuf.Data.Geometry geometries = 4;</code>
-     * @return RepeatedField
+     * @return Geometry[]|RepeatedField
      */
     public function getGeometries() {
         return $this->geometries;

@@ -4,6 +4,7 @@ namespace MBolli\PhpGeobuf;
 
 use ArrayAccess;
 use Exception;
+use Google\Protobuf\Internal\RepeatedField;
 use MBolli\PhpGeobuf\Data\Feature;
 use MBolli\PhpGeobuf\Data\FeatureCollection;
 use MBolli\PhpGeobuf\Data\Geometry;
@@ -110,7 +111,7 @@ class Decoder {
      * @return array
      */
     private static function decodeFeature(Feature $feature): array {
-        $obj = ['type' => 'Feature'];
+        $obj = ['type' => 'Feature', 'properties' => null];
 
         static::decodeProperties($feature->getCustomProperties(), $feature->getValues(), $obj);
         static::decodeId($feature, $obj);
@@ -125,18 +126,24 @@ class Decoder {
     }
 
     /**
-     * @param ArrayAccess $props
-     * @param ArrayAccess|Value[] $values
+     * @param array|RepeatedField $props
+     * @param RepeatedField|Value[] $values
      * @param null|array $dest
      * @return array
      */
-    private static function decodeProperties(ArrayAccess $props, ArrayAccess $values, ?array &$dest = null): array {
+    private static function decodeProperties($props, $values, ?array &$dest = null): array {
         $dest ??= [];
-        $keys = static::$data->getKeys();
+        $numProps = count($props);
+        if (0 === $numProps) {
+            return $dest;
+        }
 
-        foreach ($props as $i => $prop) {
+        $keys = static::$data->getKeys();
+        $r = $numProps > 2 ? range(0, $numProps-1, 2) : [0];
+
+        foreach ($r as $i) {
+            $key = (string)$keys[$props[$i]];
             $val = $values[$props[$i+1]];
-            $key = $keys[$prop];
             $valueType = $val->getValueType();
 
             if ('string_value' == $valueType) {

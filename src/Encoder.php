@@ -155,7 +155,7 @@ class Encoder {
      */
     private static function encodeProperties(IHasProperties $obj, array $propsJson): void {
         foreach ($propsJson as $key => $val) {
-            $obj->addProperty(static::encodeProperty($key, $val, $obj));
+            static::encodeProperty($key, $val, $obj);
         }
     }
 
@@ -167,7 +167,7 @@ class Encoder {
     private static function encodeCustomProperties(IHasCustomProperties $obj, array $objJson, array $exclude): void {
         foreach ($objJson as $key => $val) {
             if (!in_array($key, $exclude)) {
-                $obj->addCustomProperty(static::encodeProperty($key, $val, $obj));
+                static::encodeProperty($key, $val, $obj, true);
             }
         }
     }
@@ -175,10 +175,10 @@ class Encoder {
     /**
      * @param string $key
      * @param $val
-     * @param IHasSomeProperties $obj
+     * @param IHasCustomProperties|IHasProperties $obj
      * @return Value
      */
-    private static function encodeProperty(string $key, $val, IHasSomeProperties $obj): Value {
+    private static function encodeProperty(string $key, $val, $obj, bool $custom = false): void {
         $keyIndex = array_search($key, static::$keys, true);
 
         if (false === $keyIndex) {
@@ -186,6 +186,7 @@ class Encoder {
             static::$data->addKey($key);
             $keyIndex = count(static::$data->getKeys()) - 1;
         }
+
         $value = new Value();
 
         if (is_array($val)) {
@@ -202,12 +203,16 @@ class Encoder {
             static::encodeInt($value, (int)$val);
         }
 
-        if (method_exists($obj, 'addProperty')) {
-            $obj->addProperty($keyIndex);
-            $obj->addProperty(count($obj->getValues())-1);
-        }
+        $obj->addValue($value);
 
-        return $value;
+        $valuesIndex = count($obj->getValues())-1;
+        if (true === $custom) {
+            $obj->addCustomProperty($keyIndex);
+            $obj->addCustomProperty($valuesIndex);
+        } else {
+            $obj->addProperty($keyIndex);
+            $obj->addProperty($valuesIndex);
+        }
     }
 
     /**

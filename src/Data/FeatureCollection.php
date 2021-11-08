@@ -47,7 +47,7 @@ class FeatureCollection extends Message implements IHasCustomProperties {
 
     /**
      * Generated from protobuf field <code>repeated .MBolli.PhpGeobuf.Data.Feature features = 1;</code>
-     * @return RepeatedField
+     * @return Feature[]|RepeatedField
      */
     public function getFeatures() {
         return $this->features;
