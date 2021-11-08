@@ -86,6 +86,16 @@ class FeatureCollection extends Message implements IHasCustomProperties {
     }
 
     /**
+     * @param $var
+     * @return $this
+     */
+    public function addValue($var) {
+        $this->values[] = $var;
+
+        return $this;
+    }
+
+    /**
      * Generated from protobuf field <code>repeated uint32 custom_properties = 15 [packed = true];</code>
      * @return RepeatedField
      */

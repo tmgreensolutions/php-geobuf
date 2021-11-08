@@ -164,6 +164,18 @@ class Feature extends Message implements IHasProperties, IHasCustomProperties {
     }
 
     /**
+     * add unique value
+     *
+     * @param $var
+     * @return $this
+     */
+    public function addValue($var) {
+        $this->values[] = $var;
+
+        return $this;
+    }
+
+    /**
      * pairs of key/value indexes
      *
      * Generated from protobuf field <code>repeated uint32 properties = 14 [packed = true];</code>
