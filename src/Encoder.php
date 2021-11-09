@@ -89,10 +89,13 @@ class Encoder {
             throw new GeobufException('Error while decoding GeoJSON: ' . $e->getMessage(), 0, $e);
         }
 
-        static::$json = $geoJson;
         static::$data = new Data();
+        static::$data->setDimensions($dim);
+        static::$data->setPrecision($precision);
+
+        static::$json = $geoJson;
         static::$dim = $dim;
-        static::$e = 10** $precision; # multiplier for converting coordinates into integers
+        static::$e = 10**$precision; # multiplier for converting coordinates into integers
 
         $dataType = static::$json['type'];
         if ('FeatureCollection' == $dataType) {

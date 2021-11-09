@@ -68,6 +68,7 @@ class Decoder {
      */
     public static function decodeToArray(string $encodedInput): array {
         static::$data = new Data();
+        static::$data->mergeFromString($encodedInput);
         static::$e = 10**(static::$data->getPrecision());
         static::$dim = static::$data->getDimensions();
 
