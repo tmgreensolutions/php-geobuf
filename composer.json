@@ -21,11 +21,13 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.2"
+        "friendsofphp/php-cs-fixer": "^3.2",
+        "pestphp/pest": "^1.20"
     },
     "scripts": {
         "lint": "php-cs-fixer fix --dry-run -v --ansi --allow-risky=yes --config=./.php-cs-fixer.php",
         "lint-diff": "php-cs-fixer fix --dry-run -v --ansi --allow-risky=yes --diff --config=./.php-cs-fixer.php",
-        "fix": "php-cs-fixer fix --ansi --allow-risky=yes -v --config=./.php-cs-fixer.php"
+        "fix": "php-cs-fixer fix --ansi --allow-risky=yes -v --config=./.php-cs-fixer.php",
+        "test": "pest"
     }
 }

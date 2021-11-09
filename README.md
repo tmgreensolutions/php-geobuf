@@ -89,6 +89,7 @@ Pull requests are encouraged. Code style is enforced by PHP-CS-Fixer:
 composer run lint # lint source files and show problems (read-only)
 composer run lint-diff # lint source files and show diff to the files fixed state (read-only)
 composer run fix # lint source files and fix the problems
+composer run test # execute all tests
 ```
 
 ## Background: Proto compilation
