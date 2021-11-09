@@ -304,7 +304,7 @@ class Decoder {
         $j = 1;
         $numPolygons = $lengths[0];
 
-        foreach (range(0, $numPolygons) as $n) {
+        foreach (range(0, $numPolygons-1) as $n) {
             $numRings = $lengths[$j];
             $j++;
             $rings = [];
