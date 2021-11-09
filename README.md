@@ -22,16 +22,21 @@ The following methods are exposed:
 
 ### Encoder
 
-- `encode()` returns a geobuf-encoded string
+- `encode()` reads a JSON string. Returns a geobuf-encoded string
   - string `$dataJson` a JSON string
-  - int `$precision` max number of digits after the decimal point in coordinates, 6 by default
-  - int `$dim` number of dimensions in coordinates, 2 by default.
-
-- `encodeToFile()` returns the filesize of the resulting file or false
+- `encodeToFile()` reads a JSON string and writes to a file. Returns the filesize of the resulting file or false
   - string `$filePath` where to store the resulting geobuf file
   - string `$dataJson` a JSON string
-  - int `$precision` max number of digits after the decimal point in coordinates, 6 by default
-  - int `$dim` number of dimensions in coordinates, 2 by default.
+- `encodeFileToBufFile()` reads from a JSON file and writes to a file. Returns the filesize of the resulting file or false
+  - string `$jsonFile` path to the JSON file
+  - string `$geobufFile` where to store the resulting geobuf file
+- `encodeFileToBuf()` reads from a JSON file. Returns a geobuf-encoded string
+  - string `$fileName` path to the JSON file
+
+All encoding methods support the following two non-mandatory arguments:
+
+- int `$precision` max number of digits after the decimal point in coordinates, 6 by default
+- int `$dim` number of dimensions in coordinates, 2 by default.
 
 ### Decoder
 
@@ -43,7 +48,7 @@ The following methods are exposed:
   - string `$encodedInput` geobuf input
 - `decodeFileToJson()` returns a JSON string
   - string `$fileName` path to the geobuf file
-- `decodeFileToJsonFile()` returns the filesize of the resulting JSON file or false
+- `decodeFileToJsonFile()` writes to a file and returns the filesize of the resulting JSON file or false
   - string `$geobufFile` path to the geobuf file
   - string `$jsonFile` where to store the resulting JSON file
   

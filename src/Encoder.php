@@ -30,6 +30,35 @@ class Encoder {
     private static $keys = [];
 
     /**
+     * encodes the JSON file `$jsonFile` to Geobuf and stores it in the file `$geobufFile`.
+     * returns the stored file size on success, or false on failure.
+     *
+     * @param string $jsonFile
+     * @param string $geobufFile
+     * @param int $precision
+     * @param int $dim
+     * @return false|int
+     * @throws GeobufException
+     */
+    public static function encodeFileToBufFile(string $jsonFile, string $geobufFile, int $precision = 6, int $dim = 2) {
+        return file_put_contents($geobufFile, static::encodeFileToBuf($jsonFile, $precision, $dim));
+    }
+
+    /**
+     * encodes the JSON file `$fileName` and returns the geobuf-encoded string.
+     *
+     * @param string $fileName
+     * @param int $precision
+     * @param int $dim
+     * @return string
+     * @throws GeobufException
+     */
+    public static function encodeFileToBuf(string $fileName, int $precision = 6, int $dim = 2): string {
+        return static::encode(file_get_contents($fileName), $precision, $dim);
+    }
+
+
+    /**
      * encodes a json string `$dataJson` to Geobuf and stores it in the file `$filePath`.
      * returns the stored file size on success, or false on failure.
      *
@@ -46,6 +75,7 @@ class Encoder {
 
     /**
      * encodes a json string `$dataJson` to Geobuf and returns the resulting string.
+     *
      * @param string $dataJson
      * @param int $precision
      * @param int $dim
@@ -277,6 +307,7 @@ class Encoder {
                 $sum[$j] += $n;
             }
         }
+
         return $coords;
     }
 
