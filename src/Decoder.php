@@ -230,10 +230,11 @@ class Decoder {
      * @return array
      */
     private static function decodePoint($coords): array {
-        return array_map(
-            fn ($c) => static::decodeCoord((float)$c),
-            $coords
-        );
+        $return = [];
+        foreach ($coords as $coord) { // can't use array_map as $coords might be a RepeatedField
+            $return[] = static::decodeCoord((float)$coord);
+        }
+        return $return;
     }
 
     /**
