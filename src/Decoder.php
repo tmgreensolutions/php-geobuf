@@ -244,9 +244,11 @@ class Decoder {
      */
     private static function decodeLine($coords, ?bool $isClosed = false): array {
         $obj = [];
-        $r = range(0, static::$dim);
-        $r2 = range(0, count($coords), static::$dim);
+        $numCoords = count($coords);
+        $r = range(0, static::$dim-1);
+        $r2 = $numCoords > static::$dim ? range(0, $numCoords-1, static::$dim) : [0];
         $p0 = array_fill(0, static::$dim, 0);
+
         foreach ($r2 as $i) {
             $p = array_map(
                 fn ($j) => ($p0[$j] ?? 0) + ($coords[$i + $j] ?? 0),
