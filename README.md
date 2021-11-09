@@ -1,12 +1,14 @@
 # php-geobuf
 
+[![php-geobuf test suite](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml/badge.svg)](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml)
+
 PHP library for the geobuf compact geospatial format.
 
 This is essentially a PHP port of the great [pygeobuf](https://github.com/pygeobuf/pygeobuf).
 
 Geobuf stores GeoJSON 6-8 times smaller and TopoJSON 2-3 times smaller. Depending on the `$precision` attribute, lossless compression is possible. More information about Geobuf is available in the [JS implementation](https://github.com/mapbox/geobuf) or the [Python implementation](https://github.com/pygeobuf/pygeobuf).
 
-**Beware:** Experimental state – it works for my purposes but there probably are some bugs.
+**Beware:** Experimental state – it works for my purposes but there probably are some bugs. Of the 10 tests 5 fail currently.
 
 **Quick size comparison:** An example 745 kB GeoJSON was converted to a 90 kB Geobuf file – more than 8 times less.
 
@@ -35,7 +37,7 @@ The following methods are exposed:
 
 All encoding methods support the following two non-mandatory arguments:
 
-- int `$precision` max number of digits after the decimal point in coordinates, 6 by default
+- int `$precision` max number of digits after the decimal point in coordinates, 6 by default (10 cm).
 - int `$dim` number of dimensions in coordinates, 2 by default.
 
 ### Decoder
