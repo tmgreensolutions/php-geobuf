@@ -129,7 +129,11 @@ class Encoder {
         static::encodeId($feature, $featureJson['id'] ?? null);
         static::encodeProperties($feature, $featureJson['properties'] ?? []);
         static::encodeCustomProperties($feature, $featureJson, ['type', 'id', 'properties', 'geometry']);
-        $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
+        if (array_key_exists('geometry', $featureJson) && null !== $featureJson['geometry']) {
+            $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
+        } else {
+            $feature->setGeometry(null);
+        }
         return $feature;
     }
 
@@ -302,7 +306,7 @@ class Encoder {
         $sum = array_fill(0, static::$dim, 0);
         for ($i = 0; $i < count($points) - (int)$isClosed; $i++) {
             for ($j = 0; $j < static::$dim; $j++) {
-                $n = (int)round($points[$i][$j] * static::$e) - $sum[$j];
+                $n = (int)(round($points[$i][$j] * static::$e) - $sum[$j]);
                 $coords[] = $n;
                 $sum[$j] += $n;
             }
