@@ -2,7 +2,6 @@
 
 namespace MBolli\PhpGeobuf;
 
-use ArrayAccess;
 use Exception;
 use Google\Protobuf\Internal\RepeatedField;
 use MBolli\PhpGeobuf\Data\Feature;
@@ -54,17 +53,17 @@ class Decoder {
     /**
      * Decode the geobuf file `$fileName` and return the array.
      * @param string $fileName
-     * @return string
+     * @return array
      * @throws GeobufException
      */
-    public static function decodeFileToArray(string $fileName): string {
+    public static function decodeFileToArray(string $fileName): array {
         return static::decodeToArray(file_get_contents($fileName));
     }
 
     /**
      * Decode the geobuf input `$encodedInput` and return the array.
      * @param string $encodedInput
-     * @return string
+     * @return array
      * @throws GeobufException
      */
     public static function decodeToArray(string $encodedInput): array {
@@ -226,7 +225,7 @@ class Decoder {
     }
 
     /**
-     * @param array|ArrayAccess $coords
+     * @param array|RepeatedField $coords
      * @return array
      */
     private static function decodePoint($coords): array {
@@ -238,7 +237,7 @@ class Decoder {
     }
 
     /**
-     * @param array|ArrayAccess $coords
+     * @param array|RepeatedField $coords
      * @param null|bool $isClosed
      * @return array
      */
