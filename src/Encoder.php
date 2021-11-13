@@ -191,8 +191,7 @@ class Encoder {
      * @param null|array $propsJson
      */
     private static function encodeProperties(IHasProperties $obj, ?array $propsJson): void {
-        if ($propsJson === null) {
-            $obj->setProperties(null);
+        if (null === $propsJson) {
             return;
         }
 
