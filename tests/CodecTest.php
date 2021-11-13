@@ -11,8 +11,8 @@ foreach (scandir(GEOJSON_DIR) as $i => $file) {
     if (!preg_match("/^(.*)\.(geo|g)?json$/", $file)) continue;
 
     test('codec: ' . $file, function () use ($file) {
-        $precision = 6;
-        $dim = $file === '3dim.geojson' ? 3 : 2;
+        $precision = $file == 'geobuf-precision.json' ? 12 : 6;
+        $dim = $file == '3dim.geojson' ? 3 : 2;
         $jsonString = file_get_contents(GEOJSON_DIR . DIRECTORY_SEPARATOR . $file);
         $jsonOrig = json_decode($jsonString, true);
 
