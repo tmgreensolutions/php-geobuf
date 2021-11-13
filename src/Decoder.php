@@ -157,9 +157,7 @@ class Decoder {
             } elseif ('bool_value' == $valueType) {
                 $dest[$key] = $val->getBoolValue();
             } elseif ('json_value' == $valueType) {
-                $dest[$key] = json_decode($val->getJsonValue());
-            } else {
-                $dest[$key] = null;
+                $dest[$key] = json_decode($val->getJsonValue(), true);
             }
         }
 
