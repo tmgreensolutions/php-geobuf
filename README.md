@@ -8,9 +8,9 @@ This is essentially a PHP port of the great [pygeobuf](https://github.com/pygeob
 
 Geobuf stores GeoJSON 6-8 times smaller and TopoJSON 2-3 times smaller. Depending on the `$precision` attribute, lossless compression is possible. More information about Geobuf is available in the [JS implementation](https://github.com/mapbox/geobuf) or the [Python implementation](https://github.com/pygeobuf/pygeobuf).
 
-**Beware:** Experimental state – it works for my purposes but there probably are some bugs. Of the 10 tests 5 fail currently.
-
 **Quick size comparison:** An example 745 kB GeoJSON was converted to a 90 kB Geobuf file – more than 8 times less.
+
+**Beware:** Experimental state – it works for my purposes but there probably are some bugs.
 
 ## Installation
 
@@ -93,6 +93,8 @@ composer run lint-diff # lint source files and show diff to the files fixed stat
 composer run fix # lint source files and fix the problems
 composer run test # execute all tests
 ```
+
+If the PR is about the Encoder or Decoder, please add a test JSON to the `tests/geojson` folder. The test suite will automatically pick it up and test it when executed.
 
 ## Background: Proto compilation
 
