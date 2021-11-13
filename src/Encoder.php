@@ -235,9 +235,7 @@ class Encoder {
 
         $value = new Value();
 
-        if (is_array($val)) {
-            $value->setJsonValue(json_encode($val));
-        } elseif (is_string($val)) {
+        if (is_string($val)) {
             $value->setStringValue($val);
         } elseif (is_float($val)) {
             $value->setDoubleValue($val);
@@ -247,6 +245,8 @@ class Encoder {
             $value->setBoolValue($val);
         } elseif (is_numeric($val)) {
             static::encodeInt($value, (int)$val);
+        } else {
+            $value->setJsonValue(json_encode($val));
         }
 
         $obj->addValue($value);
