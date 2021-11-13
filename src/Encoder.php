@@ -188,9 +188,19 @@ class Encoder {
 
     /**
      * @param IHasProperties $obj
-     * @param array $propsJson
+     * @param null|array $propsJson
      */
-    private static function encodeProperties(IHasProperties $obj, array $propsJson): void {
+    private static function encodeProperties(IHasProperties $obj, ?array $propsJson): void {
+        if ($propsJson === null) {
+            $obj->setProperties(null);
+            return;
+        }
+
+        if (empty($propsJson)) {
+            $obj->setProperties([]);
+            return;
+        }
+
         foreach ($propsJson as $key => $val) {
             static::encodeProperty($key, $val, $obj);
         }
@@ -213,7 +223,6 @@ class Encoder {
      * @param string $key
      * @param $val
      * @param IHasCustomProperties|IHasProperties $obj
-     * @return Value
      */
     private static function encodeProperty(string $key, $val, $obj, bool $custom = false): void {
         $keyIndex = array_search($key, static::$keys, true);
