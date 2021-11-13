@@ -1,6 +1,6 @@
 # php-geobuf
 
-[![php-geobuf test suite](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml/badge.svg)](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml)
+[![php-geobuf test suite](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml/badge.svg)](https://github.com/mbolli/php-geobuf/actions/workflows/php-test.yml) [![Latest Stable Version](http://poser.pugx.org/mbolli/php-geobuf/v)](https://packagist.org/packages/mbolli/php-geobuf) [![Total Downloads](http://poser.pugx.org/mbolli/php-geobuf/downloads)](https://packagist.org/packages/mbolli/php-geobuf) [![Latest Unstable Version](http://poser.pugx.org/mbolli/php-geobuf/v/unstable)](https://packagist.org/packages/mbolli/php-geobuf) [![License](http://poser.pugx.org/mbolli/php-geobuf/license)](https://packagist.org/packages/mbolli/php-geobuf) [![PHP Version Require](http://poser.pugx.org/mbolli/php-geobuf/require/php)](https://packagist.org/packages/mbolli/php-geobuf)
 
 PHP library for the geobuf compact geospatial format.
 
