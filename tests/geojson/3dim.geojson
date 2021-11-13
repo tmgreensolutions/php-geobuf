@@ -3,8 +3,6 @@
   "features": [
     {
       "type": "Feature",
-      "properties": {
-      },
       "customproperty": "asdf",
       "geometry": {
         "type": "LineString",
