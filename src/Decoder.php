@@ -183,9 +183,9 @@ class Decoder {
      * @param null|Geometry $geometry
      * @return array
      */
-    private static function decodeGeometry(?Geometry $geometry): array {
+    private static function decodeGeometry(?Geometry $geometry): ?array {
         if (null === $geometry) {
-            return [];
+            return null;
         }
         $gt = static::GEOMETRY_TYPES[$geometry->getType()];
         $obj = ['type' => $gt];
