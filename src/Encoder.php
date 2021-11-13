@@ -129,13 +129,25 @@ class Encoder {
      */
     private static function encodeFeature(array $featureJson): Feature {
         $feature = new Feature();
+
+        // encode id
         static::encodeId($feature, $featureJson['id'] ?? null);
-        static::encodeProperties($feature, array_key_exists('properties', $featureJson) ? $featureJson['properties'] : []);
+
+        // encode properties
+        if (array_key_exists('properties', $featureJson)) {
+            static::encodeProperties($feature, $featureJson['properties']);
+        }
+
+        // encode custom properties
         static::encodeCustomProperties($feature, $featureJson, ['type', 'id', 'properties', 'geometry']);
-        if (array_key_exists('geometry', $featureJson) && null !== $featureJson['geometry']) {
-            $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
-        } else {
-            $feature->setGeometry(null);
+
+        // encode geometry
+        if (array_key_exists('geometry', $featureJson)) {
+            if (null === $featureJson['geometry']) {
+                $feature->setGeometry(null);
+            } else {
+                $feature->setGeometry(static::encodeGeometry($featureJson['geometry']));
+            }
         }
         return $feature;
     }
