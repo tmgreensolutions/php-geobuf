@@ -111,7 +111,7 @@ class Decoder {
      * @return array
      */
     private static function decodeFeature(Feature $feature): array {
-        $obj = ['type' => 'Feature', 'properties' => null];
+        $obj = ['type' => 'Feature'];
 
         static::decodeProperties($feature->getCustomProperties(), $feature->getValues(), $obj);
         static::decodeId($feature, $obj);
