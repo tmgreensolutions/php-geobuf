@@ -131,7 +131,7 @@ class Encoder {
         $feature = new Feature();
 
         // encode id
-        static::encodeId($feature, (empty($featureJson['id']) ? null : $featureJson['id']));
+        static::encodeId($feature, $featureJson['id'] ?? null);
 
         // encode properties
         if (array_key_exists('properties', $featureJson)) {
