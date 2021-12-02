@@ -57,7 +57,7 @@ test('codec: a line with potential accumulating error', function () {
     }
     $feature['coordinates'][0][0][] = [0, 0];
     $roundTripped = Decoder::decodeToArray(Encoder::encode(json_encode($feature)));
-    $roundX = fn($z) => round(($z[0] * 1000000) / 1000000.0);
+    $roundX = function($z) { round(($z[0] * 1000000) / 1000000.0); };
 
     $xsOrig = array_map($roundX, $feature['coordinates'][0][0]);
     $xsRoundTripped = array_map($roundX, $roundTripped['coordinates'][0][0]);

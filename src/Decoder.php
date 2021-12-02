@@ -193,7 +193,7 @@ class Decoder {
         switch ($gt) {
             case 'GeometryCollection':
                 $obj['geometries'] = array_map(
-                    fn ($g) => static::decodeGeometry($g),
+                    function ($g) { static::decodeGeometry($g); },
                     $geometry->getGeometries()
                 );
                 break;
@@ -249,7 +249,7 @@ class Decoder {
 
         foreach ($r2 as $i) {
             $p = array_map(
-                fn ($j) => ($p0[$j] ?? 0) + ($coords[$i + $j] ?? 0),
+                function ($j) use ($i, $p0, $coords) { ($p0[$j] ?? 0) + ($coords[$i + $j] ?? 0); },
                 $r
             );
             $obj[] = static::decodePoint($p);
@@ -257,7 +257,7 @@ class Decoder {
         }
 
         if (true === $isClosed) {
-            $p = array_map(fn ($j) => $coords[$j], $r);
+            $p = array_map(function ($j) use ($coords) { $coords[$j]; }, $r);
             $obj[] = static::decodePoint($p);
         }
 
