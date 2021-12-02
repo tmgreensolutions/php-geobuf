@@ -249,7 +249,7 @@ class Decoder {
 
         foreach ($r2 as $i) {
             $p = array_map(
-                function ($j) use ($i, $p0, $coords) { ($p0[$j] ?? 0) + ($coords[$i + $j] ?? 0); },
+                function ($j) use ($i, $p0, $coords) { (empty($p0[$j]) ? 0 : $p0[$j]) + (empty($coords[$i + $j]) ? 0 : $coords[$i + $j]); },
                 $r
             );
             $obj[] = static::decodePoint($p);
