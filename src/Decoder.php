@@ -132,7 +132,7 @@ class Decoder {
      * @return array
      */
     private static function decodeProperties($props, $values, ?array &$dest = null): array {
-        $dest ??= [];
+        $dest = $dest ?? [];
         $numProps = count($props);
         if (0 === $numProps) {
             return $dest;
